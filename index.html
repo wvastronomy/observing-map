@@ -44,7 +44,7 @@ body { margin: 0; padding: 0; }
         container: 'map',
         style: 'mapbox://styles/mapbox/satellite-streets-v12', // Use the standard style for the map
         projection: 'globe', // display the map as a globe
-        zoom: 9.2 , // initial zoom level, 0 is the world view, higher values zoom in
+        zoom: 9.3 , // initial zoom level, 0 is the world view, higher values zoom in
         center: [-120.552317, 47.5392318] // center the map on this longitude and latitude
     });
 
@@ -66,8 +66,8 @@ body { margin: 0; padding: 0; }
         map.setFog({}); // Set the default atmosphere style
     });
 
-    // create the popup
-    const popup = new mapboxgl.Popup({ offset: 25, scale: 3 }).setHTML(`
+    // Lake Wenatchee Popup
+    const lkwenapopup = new mapboxgl.Popup({ offset: 25, scale: 3 }).setHTML(`
     <div class="popup-title">Lake Wenatchee State Park</div>
     <div class="popup-subtitle">553 Ware Rd, Leavenworth, WA 98826</div>
     <div class="popup-narrative">
@@ -83,7 +83,7 @@ body { margin: 0; padding: 0; }
     </div>
     <!-- Image removed as requested -->
     `);
-    // Make popup text larger
+    // Make Lake Wenatchee popup text larger
     const popupStyle = document.createElement('style');
     popupStyle.innerHTML = `
         @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -131,15 +131,35 @@ body { margin: 0; padding: 0; }
         }
     `;
     document.head.appendChild(popupStyle);
-    // create DOM element for the marker
-        // Create a custom red telescope marker
-        // Default red marker
-        const Marker = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
-            .setLngLat([-120.7275146, 47.8065614])
-            .setPopup(popup)
+    // Lake Wenatchee Marker
+    const lkwena = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
+        .setLngLat([-120.7275146, 47.8065614])
+        .setPopup(lkwenapopup)
+        .addTo(map);
+
+     // Leavenworth Hatchery Popup
+    const Lhatcherypopup = new mapboxgl.Popup({ offset: 25, scale: 3 }).setHTML(`
+    <div class="popup-title">Leavenworth National Hatchery</div>
+    <div class="popup-subtitle">12790 Fish Hatchery Rd, Leavenworth, WA 98826</div>
+    <div class="popup-narrative">
+        <strong class="golden">Contact:</strong> (509)548-7641<br><br>
+        <strong class="golden">Website:</strong> <a href="https://www.fws.gov/fish-hatchery/leavenworth" target="_blank" style="color: #1E90FF;">https://www.fws.gov/</a><br><br>
+        <strong class="golden">Rules:</strong> Open to the public 24/7, no vehicles allowed beyond gate. about 100yd from viewing area. <br><br>
+        <strong class="golden">Bortle:</strong> 3 (Rural) <br><br>
+        <strong class="golden">SQM:</strong> 21.05 <br><br>
+        <strong class="golden">Viewshed:</strong><br>
+        View is wide however blocked by ridge line close to horizons. Significant obstruction to the West and South. Sagiarrius can be seen in August. Light pollution from Leavenworth and Wenatchee becoming apparent, however can still see DSOs. Viewing area is pavement which creates seeing issues on hot days.  <br><br>
+        <strong class="golden">Comments:</strong><br>
+        Gates are closed and ehicle traffic prohibited, don't bring large telescopes here, unless for the Hatchery Star Party where gates open.
+    </div>
+    `);
+    // Make Leavenworth Hatchery popup text larger
+    // Leavenworth Hatchery Marker
+        const LHatchery = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
+            .setLngLat([-120.6734319, 47.5581109])
+            .setPopup(Lhatcherypopup)
             .addTo(map);
 </script>
 
 </body>
 </html>
-
