@@ -104,6 +104,9 @@ body { margin: 0; padding: 0; }
                 word-break: break-word;
                 white-space: normal;
                 display: block;
+                border-radius: 18px;
+                box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+                border: 6px solid #71797E;
         }
         .popup-narrative strong.golden {
             color: #FFC300;
@@ -163,6 +166,32 @@ body { margin: 0; padding: 0; }
         const LHatchery = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
             .setLngLat([ -120.67297187037192,47.558527968775024])
             .setPopup(Lhatcherypopup)
+            .addTo(map);
+
+    //  Jim Adamson Soccer Field Popup
+    const jimadamsonpopup = new mapboxgl.Popup({ offset: 25, scale: 3 }).setHTML(`
+    <div class="popup-title">Jim Adamson Soccerfield</div>
+    <div class="popup-subtitle">19265 Beaver Valley Rd, Leavenworth, WA 98826</div>
+    <div class="popup-narrative">
+        <strong class="golden">Contact:</strong> (509) 763-3309<br><br>
+        <strong class="golden">Website:</strong> <a href="https://www.cascadesd.org/" target="_blank" style="color: #1E90FF;">https://www.cascadesd.org/</a><br><br>
+        <strong class="golden">Rules:</strong> Soccer field is on Beaver Valley Elementary School property. Soccer field open to the community use after school hours. Not allowed during school hours <br><br>
+        <strong class="golden">Bortle:</strong> 3 (Rural) <br><br>
+        <strong class="golden">SQM:</strong>  <br><br>
+        <strong class="golden">Viewshed:</strong><br>
+        View is rural sky with good eastern sky, however limited along horizon as ridge line blocks. North and North-west sky is partially blocked by trees. Neighbor lighting may be an issue at times. <br><br>
+        <strong class="golden">Comments:</strong><br>
+        Parking lot is at the Beaver Valley Elementary School. Soccer field is behind the old schoolhouse about 150ft east of parking area.
+    </div>
+    <div style='margin-top:1em; text-align:center;'>
+      <a href="https://drive.google.com/file/d/1fEANOK_CcBfXOc-kKXfJ_vAmHJ-EvjAq/view?usp=sharing" target="_blank" style="font-size:18px; color:#1E90FF; text-decoration:underline;">View Soccerfield Image</a>
+    </div>
+    `);
+    // Make Leavenworth Hatchery popup text larger
+    // Leavenworth Hatchery Marker
+        const jimadamson = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
+            .setLngLat([ -120.66413675233619, 47.769223441512366])
+            .setPopup(jimadamsonpopup)
             .addTo(map);
 </script>
 
