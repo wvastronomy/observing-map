@@ -66,6 +66,136 @@ body { margin: 0; padding: 0; }
         map.setFog({}); // Set the default atmosphere style
     });
 
+    // Add 3D toggle button
+    const threeDButton = document.createElement('button');
+    threeDButton.textContent = 'Toggle 3D';
+    threeDButton.style.position = 'absolute';
+    threeDButton.style.right = '20px';
+    threeDButton.style.bottom = '20px';
+    threeDButton.style.zIndex = '1000';
+    threeDButton.style.padding = '10px 20px';
+    threeDButton.style.fontSize = '18px';
+    threeDButton.style.background = '#FFC300';
+    threeDButton.style.color = '#000';
+    threeDButton.style.border = 'none';
+    threeDButton.style.borderRadius = '8px';
+    threeDButton.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    threeDButton.style.cursor = 'pointer';
+    document.body.appendChild(threeDButton);
+
+    let is3D = false;
+    threeDButton.addEventListener('click', () => {
+        if (!is3D) {
+            map.setPitch(60); // tilt the map for 3D effect
+            map.setBearing(30); // rotate for better 3D view
+            is3D = true;
+        } else {
+            map.setPitch(0); // reset to 2D
+            map.setBearing(0);
+            is3D = false;
+        }
+    });
+
+    // Add rotate button
+    const rotateButton = document.createElement('button');
+    rotateButton.textContent = 'Rotate Map';
+    rotateButton.style.position = 'absolute';
+    rotateButton.style.right = '20px';
+    rotateButton.style.bottom = '70px';
+    rotateButton.style.zIndex = '1000';
+    rotateButton.style.padding = '10px 20px';
+    rotateButton.style.fontSize = '18px';
+    rotateButton.style.background = '#FFC300';
+    rotateButton.style.color = '#000';
+    rotateButton.style.border = 'none';
+    rotateButton.style.borderRadius = '8px';
+    rotateButton.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    rotateButton.style.cursor = 'pointer';
+    document.body.appendChild(rotateButton);
+
+    let currentBearing = 0;
+    let rotateInterval;
+    rotateButton.addEventListener('mousedown', () => {
+        rotateInterval = setInterval(() => {
+            currentBearing = (currentBearing + 11.25) % 360;
+            map.setBearing(currentBearing);
+        }, 50); // rotate every 50ms for fluid motion
+    });
+    rotateButton.addEventListener('mouseup', () => {
+        clearInterval(rotateInterval);
+    });
+    rotateButton.addEventListener('mouseleave', () => {
+        clearInterval(rotateInterval);
+    });
+    rotateButton.addEventListener('touchstart', () => {
+        rotateInterval = setInterval(() => {
+            currentBearing = (currentBearing + 11.25) % 360;
+            map.setBearing(currentBearing);
+        }, 50);
+    });
+    rotateButton.addEventListener('touchend', () => {
+        clearInterval(rotateInterval);
+    });
+
+    // Add Light Pollution Map Layer (VIIRS 2021)
+    function addLightPollutionLayer() {
+        try {
+            if (!map.getSource('lightpollution')) {
+                map.addSource('lightpollution', {
+                    'type': 'raster',
+                    'tiles': [
+                        'https://tiles.lightpollutionmap.info/night/2021/{z}/{x}/{y}.png'
+                    ],
+                    'tileSize': 256,
+                    'attribution': '© lightpollutionmap.info'
+                });
+            }
+            if (!map.getLayer('lightpollution-layer')) {
+                map.addLayer({
+                    'id': 'lightpollution-layer',
+                    'type': 'raster',
+                    'source': 'lightpollution',
+                    'minzoom': 0,
+                    'maxzoom': 18,
+                    'paint': {
+                        'raster-opacity': 0.6
+                    },
+                    'layout': {
+                        'visibility': 'visible'
+                    }
+                }, undefined); // Add as top layer
+            }
+        } catch (e) {
+            console.error('Failed to add light pollution layer:', e);
+        }
+    }
+    map.on('style.load', addLightPollutionLayer);
+
+    // Add Light Pollution Toggle Button
+    const lpButton = document.createElement('button');
+    lpButton.textContent = 'Toggle Light Pollution';
+    lpButton.style.position = 'absolute';
+    lpButton.style.right = '20px';
+    lpButton.style.bottom = '120px';
+    lpButton.style.zIndex = '1000';
+    lpButton.style.padding = '10px 20px';
+    lpButton.style.fontSize = '18px';
+    lpButton.style.background = '#FFC300';
+    lpButton.style.color = '#000';
+    lpButton.style.border = 'none';
+    lpButton.style.borderRadius = '8px';
+    lpButton.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    lpButton.style.cursor = 'pointer';
+    document.body.appendChild(lpButton);
+
+    let lpVisible = true;
+    lpButton.addEventListener('click', () => {
+        if (map.getLayer('lightpollution-layer')) {
+            lpVisible = !lpVisible;
+            map.setLayoutProperty('lightpollution-layer', 'visibility', lpVisible ? 'visible' : 'none');
+        }
+    });
+
     // Lake Wenatchee Popup
     const lkwenapopup = new mapboxgl.Popup({ offset: 25, scale: 3 }).setHTML(`
     <div class="popup-title">Lake Wenatchee State Park</div>
@@ -184,16 +314,46 @@ body { margin: 0; padding: 0; }
         Parking lot is at the Beaver Valley Elementary School. Soccer field is behind the old schoolhouse about 150ft east of parking area.
     </div>
     <div style='margin-top:1em; text-align:center;'>
-      <a href="https://drive.google.com/file/d/1fEANOK_CcBfXOc-kKXfJ_vAmHJ-EvjAq/view?usp=sharing" target="_blank" style="font-size:18px; color:#1E90FF; text-decoration:underline;">View Soccerfield Image</a>
+      <a href="https://drive.google.com/file/d/15TZp-9Z-6w0N1Z5IxkoBTcuSvBLMS8Tx/view?usp=sharing" target="_blank" style="font-size:18px; color:#1E90FF; text-decoration:underline;">View Soccerfield Image</a>
     </div>
     `);
-    // Make Leavenworth Hatchery popup text larger
-    // Leavenworth Hatchery Marker
-        const jimadamson = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
-            .setLngLat([ -120.66413675233619, 47.769223441512366])
+    // Make Jim Adamson popup text larger
+    // Jim Adamson Marker
+        const jimadamsonMarker = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
+            .setLngLat([ -120.66635, 47.769252])
             .setPopup(jimadamsonpopup)
+            .addTo(map);
+
+    // Chumstick Mtn Popup
+    const ChumMTNpopup = new mapboxgl.Popup({ offset: 25, scale: 3 }).setHTML(`
+    <div class="popup-title">Chumstick Mountain</div>
+    <div class="popup-subtitle"> Lat 47.6506803, Long -120.4509177</div>
+    <div class="popup-narrative">
+        <strong class="golden">Contact:</strong> (509) 548-2550<br><br>
+        <strong class="golden">Website:</strong> <a href="https://www.fs.usda.gov/r06/okanogan-wenatchee" target="_blank" style="color: #1E90FF;">www.fs.usda.gov/</a><br><br>
+        <strong class="golden">Rules:</strong> Open to the public 24/7. Pull off and set up off roadway. do not park over vegetation, creating fire risk and wildlife disturbance.<br><br>
+        <strong class="golden">Bortle:</strong> 2 (Dark Sky Site) <br><br>
+        <strong class="golden">SQM:</strong> Unknown <br><br>
+        <strong class="golden">Viewshed:</strong><br>
+        Excellent 360 View Shed. Much of the view have below horizon views.  <br><br>
+        <strong class="golden">Comments:</strong><br>
+        Best route is from Eagle Creek Rd, Optional routes include Derby Canyon. Dirt road & ruts may limit accessiblity for lower clearance vehicles. Conditions at site may be dusty. Exposure on mtn may create windy conditons. A few good pull off spots near the summit to include ridgeline and summit itself. Big enough for a few vehicles and scopes.
+    </div>
+    <div style='margin-top:1em; text-align:center;'>
+      <a href="https://drive.google.com/file/d/1tqrQT--HUzksj-nDz5yWeSOKQ0JY97Tj/view?usp=sharing" target="_blank" style="font-size:18px; color:#1E90FF; text-decoration:underline;">View Summit Image</a>
+    </div> 
+    <div style='margin-top:1em; text-align:center;'>
+      <a href="https://drive.google.com/file/d/1evCHG0STRMlnpq4LnszJPbJEjIVcHtNP/view?usp=sharing" target="_blank" style="font-size:18px; color:#1E90FF; text-decoration:underline;">View Ridgeline Image</a>
+    </div>
+    `);
+    // Make Chum MTN popup text larger
+    // Chum MTN Marker
+        const ChumMTNMarker = new mapboxgl.Marker({ color: '#fc0303', rotation: 0, scale: .5 })
+            .setLngLat([ -120.4509177, 47.6506803])
+            .setPopup(ChumMTNpopup)
             .addTo(map);
 </script>
 
 </body>
 </html>
+
